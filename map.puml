@@ -1,0 +1,1150 @@
+@startuml
+class net.micode.notes.gtask.exception.ActionFailureException {
+- {static} long serialVersionUID
+}
+class net.micode.notes.ui.NotesListItem {
+- ImageView mAlert
+- TextView mTitle
+- TextView mTime
+- TextView mCallName
+- NoteItemData mItemData
+- CheckBox mCheckBox
++ void bind(Context,NoteItemData,boolean,boolean)
+- void setBackground(NoteItemData)
++ NoteItemData getItemData()
+}
+class net.micode.notes.model.WorkingNote {
+- Note mNote
+- long mNoteId
+- String mContent
+- int mMode
+- long mAlertDate
+- long mModifiedDate
+- int mBgColorId
+- int mWidgetId
+- int mWidgetType
+- long mFolderId
+- Context mContext
+- {static} String TAG
+- boolean mIsDeleted
+- NoteSettingChangedListener mNoteSettingStatusListener
++ {static} String[] DATA_PROJECTION
++ {static} String[] NOTE_PROJECTION
+- {static} int DATA_ID_COLUMN
+- {static} int DATA_CONTENT_COLUMN
+- {static} int DATA_MIME_TYPE_COLUMN
+- {static} int DATA_MODE_COLUMN
+- {static} int NOTE_PARENT_ID_COLUMN
+- {static} int NOTE_ALERTED_DATE_COLUMN
+- {static} int NOTE_BG_COLOR_ID_COLUMN
+- {static} int NOTE_WIDGET_ID_COLUMN
+- {static} int NOTE_WIDGET_TYPE_COLUMN
+- {static} int NOTE_MODIFIED_DATE_COLUMN
+- void loadNote()
+- void loadNoteData()
++ {static} WorkingNote createEmptyNote(Context,long,int,int,int)
++ {static} WorkingNote load(Context,long)
++ boolean saveNote()
++ boolean existInDatabase()
+- boolean isWorthSaving()
++ void setOnSettingStatusChangedListener(NoteSettingChangedListener)
++ void setAlertDate(long,boolean)
++ void markDeleted(boolean)
++ void setBgColorId(int)
++ void setCheckListMode(int)
++ void setWidgetType(int)
++ void setWidgetId(int)
++ void setWorkingText(String)
++ void convertToCallNote(String,long)
++ boolean hasClockAlert()
++ String getContent()
++ long getAlertDate()
++ long getModifiedDate()
++ int getBgColorResId()
++ int getBgColorId()
++ int getTitleBgResId()
++ int getCheckListMode()
++ long getNoteId()
++ long getFolderId()
++ int getWidgetId()
++ int getWidgetType()
+}
+interface net.micode.notes.model.WorkingNote.NoteSettingChangedListener {
+~ void onBackgroundColorChanged()
+~ void onClockAlertChanged(long,boolean)
+~ void onWidgetChanged()
+~ void onCheckListModeChanged(int,int)
+}
+class net.micode.notes.tool.ResourceParser {
++ {static} int YELLOW
++ {static} int BLUE
++ {static} int WHITE
++ {static} int GREEN
++ {static} int RED
++ {static} int BG_DEFAULT_COLOR
++ {static} int TEXT_SMALL
++ {static} int TEXT_MEDIUM
++ {static} int TEXT_LARGE
++ {static} int TEXT_SUPER
++ {static} int BG_DEFAULT_FONT_SIZE
++ {static} int getDefaultBgId(Context)
+}
+class net.micode.notes.tool.ResourceParser.NoteBgResources {
+- {static} int[] BG_EDIT_RESOURCES
+- {static} int[] BG_EDIT_TITLE_RESOURCES
++ {static} int getNoteBgResource(int)
++ {static} int getNoteTitleBgResource(int)
+}
+class net.micode.notes.tool.ResourceParser.NoteItemBgResources {
+- {static} int[] BG_FIRST_RESOURCES
+- {static} int[] BG_NORMAL_RESOURCES
+- {static} int[] BG_LAST_RESOURCES
+- {static} int[] BG_SINGLE_RESOURCES
++ {static} int getNoteBgFirstRes(int)
++ {static} int getNoteBgLastRes(int)
++ {static} int getNoteBgSingleRes(int)
++ {static} int getNoteBgNormalRes(int)
++ {static} int getFolderBgRes()
+}
+class net.micode.notes.tool.ResourceParser.WidgetBgResources {
+- {static} int[] BG_2X_RESOURCES
+- {static} int[] BG_4X_RESOURCES
++ {static} int getWidget2xBgResource(int)
++ {static} int getWidget4xBgResource(int)
+}
+class net.micode.notes.tool.ResourceParser.TextAppearanceResources {
+- {static} int[] TEXTAPPEARANCE_RESOURCES
++ {static} int getTexAppearanceResource(int)
++ {static} int getResourcesSize()
+}
+class net.micode.notes.gtask.remote.GTaskASyncTask {
+- {static} int GTASK_SYNC_NOTIFICATION_ID
+- Context mContext
+- NotificationManager mNotifiManager
+- GTaskManager mTaskManager
+- OnCompleteListener mOnCompleteListener
++ void cancelSync()
++ void publishProgess(String)
+- void showNotification(int,String)
+# Integer doInBackground(Void)
+# void onProgressUpdate(String)
+# void onPostExecute(Integer)
+}
+interface net.micode.notes.gtask.remote.GTaskASyncTask.OnCompleteListener {
+~ void onComplete()
+}
+class net.micode.notes.tool.DataUtils {
++ {static} String TAG
++ {static} boolean batchDeleteNotes(ContentResolver,HashSet<Long>)
++ {static} void moveNoteToFoler(ContentResolver,long,long,long)
++ {static} boolean batchMoveToFolder(ContentResolver,HashSet<Long>,long)
++ {static} int getUserFolderCount(ContentResolver)
++ {static} boolean visibleInNoteDatabase(ContentResolver,long,int)
++ {static} boolean existInNoteDatabase(ContentResolver,long)
++ {static} boolean existInDataDatabase(ContentResolver,long)
++ {static} boolean checkVisibleFolderName(ContentResolver,String)
++ {static} HashSet<AppWidgetAttribute> getFolderNoteWidget(ContentResolver,long)
++ {static} String getCallNumberByNoteId(ContentResolver,long)
++ {static} long getNoteIdByPhoneNumberAndCallDate(ContentResolver,String,long)
++ {static} String getSnippetById(ContentResolver,long)
++ {static} String getFormattedSnippet(String)
+}
+class net.micode.notes.gtask.exception.NetworkFailureException {
+- {static} long serialVersionUID
+}
+class net.micode.notes.ui.AlarmAlertActivity {
+- long mNoteId
+- String mSnippet
+- {static} int SNIPPET_PREW_MAX_LEN
+~ MediaPlayer mPlayer
+# void onCreate(Bundle)
+- boolean isScreenOn()
+- void playAlarmSound()
+- void showActionDialog()
++ void onClick(DialogInterface,int)
++ void onDismiss(DialogInterface)
+- void stopAlarmSound()
+}
+class net.micode.notes.ui.DateTimePickerDialog {
+- Calendar mDate
+- boolean mIs24HourView
+- OnDateTimeSetListener mOnDateTimeSetListener
+- DateTimePicker mDateTimePicker
++ void set24HourView(boolean)
++ void setOnDateTimeSetListener(OnDateTimeSetListener)
+- void updateTitle(long)
++ void onClick(DialogInterface,int)
+}
+interface net.micode.notes.ui.DateTimePickerDialog.OnDateTimeSetListener {
+~ void OnDateTimeSet(AlertDialog,long)
+}
+class net.micode.notes.gtask.data.TaskList {
+- {static} String TAG
+- int mIndex
+- ArrayList<Task> mChildren
++ JSONObject getCreateAction(int)
++ JSONObject getUpdateAction(int)
++ void setContentByRemoteJSON(JSONObject)
++ void setContentByLocalJSON(JSONObject)
++ JSONObject getLocalJSONFromContent()
++ int getSyncAction(Cursor)
++ int getChildTaskCount()
++ boolean addChildTask(Task)
++ boolean addChildTask(Task,int)
++ boolean removeChildTask(Task)
++ boolean moveChildTask(Task,int)
++ Task findChildTaskByGid(String)
++ int getChildTaskIndex(Task)
++ Task getChildTaskByIndex(int)
++ Task getChilTaskByGid(String)
++ ArrayList<Task> getChildTaskList()
++ void setIndex(int)
++ int getIndex()
+}
+class net.micode.notes.gtask.data.Task {
+- {static} String TAG
+- boolean mCompleted
+- String mNotes
+- JSONObject mMetaInfo
+- Task mPriorSibling
+- TaskList mParent
++ JSONObject getCreateAction(int)
++ JSONObject getUpdateAction(int)
++ void setContentByRemoteJSON(JSONObject)
++ void setContentByLocalJSON(JSONObject)
++ JSONObject getLocalJSONFromContent()
++ void setMetaInfo(MetaData)
++ int getSyncAction(Cursor)
++ boolean isWorthSaving()
++ void setCompleted(boolean)
++ void setNotes(String)
++ void setPriorSibling(Task)
++ void setParent(TaskList)
++ boolean getCompleted()
++ String getNotes()
++ Task getPriorSibling()
++ TaskList getParent()
+}
+class net.micode.notes.tool.GTaskStringUtils {
++ {static} String GTASK_JSON_ACTION_ID
++ {static} String GTASK_JSON_ACTION_LIST
++ {static} String GTASK_JSON_ACTION_TYPE
++ {static} String GTASK_JSON_ACTION_TYPE_CREATE
++ {static} String GTASK_JSON_ACTION_TYPE_GETALL
++ {static} String GTASK_JSON_ACTION_TYPE_MOVE
++ {static} String GTASK_JSON_ACTION_TYPE_UPDATE
++ {static} String GTASK_JSON_CREATOR_ID
++ {static} String GTASK_JSON_CHILD_ENTITY
++ {static} String GTASK_JSON_CLIENT_VERSION
++ {static} String GTASK_JSON_COMPLETED
++ {static} String GTASK_JSON_CURRENT_LIST_ID
++ {static} String GTASK_JSON_DEFAULT_LIST_ID
++ {static} String GTASK_JSON_DELETED
++ {static} String GTASK_JSON_DEST_LIST
++ {static} String GTASK_JSON_DEST_PARENT
++ {static} String GTASK_JSON_DEST_PARENT_TYPE
++ {static} String GTASK_JSON_ENTITY_DELTA
++ {static} String GTASK_JSON_ENTITY_TYPE
++ {static} String GTASK_JSON_GET_DELETED
++ {static} String GTASK_JSON_ID
++ {static} String GTASK_JSON_INDEX
++ {static} String GTASK_JSON_LAST_MODIFIED
++ {static} String GTASK_JSON_LATEST_SYNC_POINT
++ {static} String GTASK_JSON_LIST_ID
++ {static} String GTASK_JSON_LISTS
++ {static} String GTASK_JSON_NAME
++ {static} String GTASK_JSON_NEW_ID
++ {static} String GTASK_JSON_NOTES
++ {static} String GTASK_JSON_PARENT_ID
++ {static} String GTASK_JSON_PRIOR_SIBLING_ID
++ {static} String GTASK_JSON_RESULTS
++ {static} String GTASK_JSON_SOURCE_LIST
++ {static} String GTASK_JSON_TASKS
++ {static} String GTASK_JSON_TYPE
++ {static} String GTASK_JSON_TYPE_GROUP
++ {static} String GTASK_JSON_TYPE_TASK
++ {static} String GTASK_JSON_USER
++ {static} String MIUI_FOLDER_PREFFIX
++ {static} String FOLDER_DEFAULT
++ {static} String FOLDER_CALL_NOTE
++ {static} String FOLDER_META
++ {static} String META_HEAD_GTASK_ID
++ {static} String META_HEAD_NOTE
++ {static} String META_HEAD_DATA
++ {static} String META_NOTE_NAME
+}
+class net.micode.notes.gtask.remote.GTaskSyncService {
++ {static} String ACTION_STRING_NAME
++ {static} int ACTION_START_SYNC
++ {static} int ACTION_CANCEL_SYNC
++ {static} int ACTION_INVALID
++ {static} String GTASK_SERVICE_BROADCAST_NAME
++ {static} String GTASK_SERVICE_BROADCAST_IS_SYNCING
++ {static} String GTASK_SERVICE_BROADCAST_PROGRESS_MSG
+- {static} GTaskASyncTask mSyncTask
+- {static} String mSyncProgress
+- void startSync()
+- void cancelSync()
++ void onCreate()
++ int onStartCommand(Intent,int,int)
++ void onLowMemory()
++ IBinder onBind(Intent)
++ void sendBroadcast(String)
++ {static} void startSync(Activity)
++ {static} void cancelSync(Context)
++ {static} boolean isSyncing()
++ {static} String getProgressString()
+}
+class net.micode.notes.gtask.remote.GTaskManager {
+- {static} String TAG
++ {static} int STATE_SUCCESS
++ {static} int STATE_NETWORK_ERROR
++ {static} int STATE_INTERNAL_ERROR
++ {static} int STATE_SYNC_IN_PROGRESS
++ {static} int STATE_SYNC_CANCELLED
+- {static} GTaskManager mInstance
+- Activity mActivity
+- Context mContext
+- ContentResolver mContentResolver
+- boolean mSyncing
+- boolean mCancelled
+- HashMap<String,TaskList> mGTaskListHashMap
+- HashMap<String,Node> mGTaskHashMap
+- HashMap<String,MetaData> mMetaHashMap
+- TaskList mMetaList
+- HashSet<Long> mLocalDeleteIdMap
+- HashMap<String,Long> mGidToNid
+- HashMap<Long,String> mNidToGid
++ {static} GTaskManager getInstance()
++ void setActivityContext(Activity)
++ int sync(Context,GTaskASyncTask)
+- void initGTaskList()
+- void syncContent()
+- void syncFolder()
+- void doContentSync(int,Node,Cursor)
+- void addLocalNode(Node)
+- void updateLocalNode(Node,Cursor)
+- void addRemoteNode(Node,Cursor)
+- void updateRemoteNode(Node,Cursor)
+- void updateRemoteMeta(String,SqlNote)
+- void refreshLocalSyncId()
++ String getSyncAccount()
++ void cancelSync()
+}
+class net.micode.notes.data.NotesProvider {
+- {static} UriMatcher mMatcher
+- NotesDatabaseHelper mHelper
+- {static} String TAG
+- {static} int URI_NOTE
+- {static} int URI_NOTE_ITEM
+- {static} int URI_DATA
+- {static} int URI_DATA_ITEM
+- {static} int URI_SEARCH
+- {static} int URI_SEARCH_SUGGEST
+- {static} String NOTES_SEARCH_PROJECTION
+- {static} String NOTES_SNIPPET_SEARCH_QUERY
++ boolean onCreate()
++ Cursor query(Uri,String[],String,String[],String)
++ Uri insert(Uri,ContentValues)
++ int delete(Uri,String,String[])
++ int update(Uri,ContentValues,String,String[])
+- String parseSelection(String)
+- void increaseNoteVersion(long,String,String[])
++ String getType(Uri)
+}
+class net.micode.notes.data.NotesDatabaseHelper {
+- {static} String DB_NAME
+- {static} int DB_VERSION
+- {static} String TAG
+- {static} NotesDatabaseHelper mInstance
+- {static} String CREATE_NOTE_TABLE_SQL
+- {static} String CREATE_DATA_TABLE_SQL
+- {static} String CREATE_DATA_NOTE_ID_INDEX_SQL
+- {static} String NOTE_INCREASE_FOLDER_COUNT_ON_UPDATE_TRIGGER
+- {static} String NOTE_DECREASE_FOLDER_COUNT_ON_UPDATE_TRIGGER
+- {static} String NOTE_INCREASE_FOLDER_COUNT_ON_INSERT_TRIGGER
+- {static} String NOTE_DECREASE_FOLDER_COUNT_ON_DELETE_TRIGGER
+- {static} String DATA_UPDATE_NOTE_CONTENT_ON_INSERT_TRIGGER
+- {static} String DATA_UPDATE_NOTE_CONTENT_ON_UPDATE_TRIGGER
+- {static} String DATA_UPDATE_NOTE_CONTENT_ON_DELETE_TRIGGER
+- {static} String NOTE_DELETE_DATA_ON_DELETE_TRIGGER
+- {static} String FOLDER_DELETE_NOTES_ON_DELETE_TRIGGER
+- {static} String FOLDER_MOVE_NOTES_ON_TRASH_TRIGGER
++ void createNoteTable(SQLiteDatabase)
+- void reCreateNoteTableTriggers(SQLiteDatabase)
+- void createSystemFolder(SQLiteDatabase)
++ void createDataTable(SQLiteDatabase)
+- void reCreateDataTableTriggers(SQLiteDatabase)
+~ {static} NotesDatabaseHelper getInstance(Context)
++ void onCreate(SQLiteDatabase)
++ void onUpgrade(SQLiteDatabase,int,int)
+- void upgradeToV2(SQLiteDatabase)
+- void upgradeToV3(SQLiteDatabase)
+- void upgradeToV4(SQLiteDatabase)
+}
+interface net.micode.notes.data.NotesDatabaseHelper.TABLE {
++ {static} String NOTE
++ {static} String DATA
+}
+class net.micode.notes.data.Contact {
+- {static} HashMap<String,String> sContactCache
+- {static} String TAG
+- {static} String CALLER_ID_SELECTION
++ {static} String getContact(Context,String)
+}
+class net.micode.notes.model.Note {
+- ContentValues mNoteDiffValues
+- NoteData mNoteData
+- {static} String TAG
++ {static} long getNewNoteId(Context,long)
++ void setNoteValue(String,String)
++ void setTextData(String,String)
++ void setTextDataId(long)
++ long getTextDataId()
++ void setCallDataId(long)
++ void setCallData(String,String)
++ boolean isLocalModified()
++ boolean syncNote(Context,long)
+}
+class net.micode.notes.model.Note.NoteData {
+- long mTextDataId
+- ContentValues mTextDataValues
+- long mCallDataId
+- ContentValues mCallDataValues
+- {static} String TAG
+~ boolean isLocalModified()
+~ void setTextDataId(long)
+~ void setCallDataId(long)
+~ void setCallData(String,String)
+~ void setTextData(String,String)
+~ Uri pushIntoContentResolver(Context,long)
+}
+abstract class net.micode.notes.widget.NoteWidgetProvider {
++ {static} String[] PROJECTION
++ {static} int COLUMN_ID
++ {static} int COLUMN_BG_COLOR_ID
++ {static} int COLUMN_SNIPPET
+- {static} String TAG
++ void onDeleted(Context,int[])
+- Cursor getNoteWidgetInfo(Context,int)
+# void update(Context,AppWidgetManager,int[])
+- void update(Context,AppWidgetManager,int[],boolean)
+# {abstract}int getBgResourceId(int)
+# {abstract}int getLayoutId()
+# {abstract}int getWidgetType()
+}
+class net.micode.notes.ui.NoteEditText {
+- {static} String TAG
+- int mIndex
+- int mSelectionStartBeforeDelete
+- {static} String SCHEME_TEL
+- {static} String SCHEME_HTTP
+- {static} String SCHEME_EMAIL
+- {static} Map<String,Integer> sSchemaActionResMap
+- OnTextViewChangeListener mOnTextViewChangeListener
++ void setIndex(int)
++ void setOnTextViewChangeListener(OnTextViewChangeListener)
++ boolean onTouchEvent(MotionEvent)
++ boolean onKeyDown(int,KeyEvent)
++ boolean onKeyUp(int,KeyEvent)
+# void onFocusChanged(boolean,int,Rect)
+# void onCreateContextMenu(ContextMenu)
+}
+interface net.micode.notes.ui.NoteEditText.OnTextViewChangeListener {
+~ void onEditTextDelete(int,String)
+~ void onEditTextEnter(int,String)
+~ void onTextChange(int,boolean)
+}
+class net.micode.notes.ui.FoldersListAdapter {
++ {static} String[] PROJECTION
++ {static} int ID_COLUMN
++ {static} int NAME_COLUMN
++ View newView(Context,Cursor,ViewGroup)
++ void bindView(View,Context,Cursor)
++ String getFolderName(Context,int)
+}
+class net.micode.notes.ui.FoldersListAdapter.FolderListItem {
+- TextView mName
++ void bind(String)
+}
+class net.micode.notes.ui.NoteEditActivity {
+- {static} Map<Integer,Integer> sBgSelectorBtnsMap
+- {static} Map<Integer,Integer> sBgSelectorSelectionMap
+- {static} Map<Integer,Integer> sFontSizeBtnsMap
+- {static} Map<Integer,Integer> sFontSelectorSelectionMap
+- {static} String TAG
+- HeadViewHolder mNoteHeaderHolder
+- View mHeadViewPanel
+- View mNoteBgColorSelector
+- View mFontSizeSelector
+- EditText mNoteEditor
+- View mNoteEditorPanel
+- WorkingNote mWorkingNote
+- SharedPreferences mSharedPrefs
+- int mFontSizeId
+- {static} String PREFERENCE_FONT_SIZE
+- {static} int SHORTCUT_ICON_TITLE_MAX_LEN
++ {static} String TAG_CHECKED
++ {static} String TAG_UNCHECKED
+- LinearLayout mEditTextList
+- String mUserQuery
+- Pattern mPattern
+# void onCreate(Bundle)
+# void onRestoreInstanceState(Bundle)
+- boolean initActivityState(Intent)
+# void onResume()
+- void initNoteScreen()
+- void showAlertHeader()
+# void onNewIntent(Intent)
+# void onSaveInstanceState(Bundle)
++ boolean dispatchTouchEvent(MotionEvent)
+- boolean inRangeOfView(View,MotionEvent)
+- void initResources()
+# void onPause()
+- void updateWidget()
++ void onClick(View)
++ void onBackPressed()
+- boolean clearSettingState()
++ void onBackgroundColorChanged()
++ boolean onPrepareOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
+- void setReminder()
+- void sendTo(Context,String)
+- void createNewNote()
+- void deleteCurrentNote()
+- boolean isSyncMode()
++ void onClockAlertChanged(long,boolean)
++ void onWidgetChanged()
++ void onEditTextDelete(int,String)
++ void onEditTextEnter(int,String)
+- void switchToListMode(String)
+- Spannable getHighlightQueryResult(String,String)
+- View getListItem(String,int)
++ void onTextChange(int,boolean)
++ void onCheckListModeChanged(int,int)
+- boolean getWorkingText()
+- boolean saveNote()
+- void sendToDesktop()
+- String makeShortcutIconTitle(String)
+- void showToast(int)
+- void showToast(int,int)
+}
+class net.micode.notes.ui.NoteEditActivity.HeadViewHolder {
++ TextView tvModified
++ ImageView ivAlertIcon
++ TextView tvAlertDate
++ ImageView ibSetBgColor
+}
+class net.micode.notes.ui.NotesListAdapter {
+- {static} String TAG
+- Context mContext
+- HashMap<Integer,Boolean> mSelectedIndex
+- int mNotesCount
+- boolean mChoiceMode
++ View newView(Context,Cursor,ViewGroup)
++ void bindView(View,Context,Cursor)
++ void setCheckedItem(int,boolean)
++ boolean isInChoiceMode()
++ void setChoiceMode(boolean)
++ void selectAll(boolean)
++ HashSet<Long> getSelectedItemIds()
++ HashSet<AppWidgetAttribute> getSelectedWidget()
++ int getSelectedCount()
++ boolean isAllSelected()
++ boolean isSelectedItem(int)
+# void onContentChanged()
++ void changeCursor(Cursor)
+- void calcNotesCount()
+}
+class net.micode.notes.ui.NotesListAdapter.AppWidgetAttribute {
++ int widgetId
++ int widgetType
+}
+class net.micode.notes.widget.NoteWidgetProvider_4x {
++ void onUpdate(Context,AppWidgetManager,int[])
+# int getLayoutId()
+# int getBgResourceId(int)
+# int getWidgetType()
+}
+abstract class net.micode.notes.gtask.data.Node {
++ {static} int SYNC_ACTION_NONE
++ {static} int SYNC_ACTION_ADD_REMOTE
++ {static} int SYNC_ACTION_ADD_LOCAL
++ {static} int SYNC_ACTION_DEL_REMOTE
++ {static} int SYNC_ACTION_DEL_LOCAL
++ {static} int SYNC_ACTION_UPDATE_REMOTE
++ {static} int SYNC_ACTION_UPDATE_LOCAL
++ {static} int SYNC_ACTION_UPDATE_CONFLICT
++ {static} int SYNC_ACTION_ERROR
+- String mGid
+- String mName
+- long mLastModified
+- boolean mDeleted
++ {abstract}JSONObject getCreateAction(int)
++ {abstract}JSONObject getUpdateAction(int)
++ {abstract}void setContentByRemoteJSON(JSONObject)
++ {abstract}void setContentByLocalJSON(JSONObject)
++ {abstract}JSONObject getLocalJSONFromContent()
++ {abstract}int getSyncAction(Cursor)
++ void setGid(String)
++ void setName(String)
++ void setLastModified(long)
++ void setDeleted(boolean)
++ String getGid()
++ String getName()
++ long getLastModified()
++ boolean getDeleted()
+}
+class net.micode.notes.gtask.remote.GTaskClient {
+- {static} String TAG
+- {static} String GTASK_URL
+- {static} String GTASK_GET_URL
+- {static} String GTASK_POST_URL
+- {static} GTaskClient mInstance
+- DefaultHttpClient mHttpClient
+- String mGetUrl
+- String mPostUrl
+- long mClientVersion
+- boolean mLoggedin
+- long mLastLoginTime
+- int mActionId
+- Account mAccount
+- JSONArray mUpdateArray
++ {static} GTaskClient getInstance()
++ boolean login(Activity)
+- String loginGoogleAccount(Activity,boolean)
+- boolean tryToLoginGtask(Activity,String)
+- boolean loginGtask(String)
+- int getActionId()
+- HttpPost createHttpPost()
+- String getResponseContent(HttpEntity)
+- JSONObject postRequest(JSONObject)
++ void createTask(Task)
++ void createTaskList(TaskList)
++ void commitUpdate()
++ void addUpdateNode(Node)
++ void moveTask(Task,TaskList,TaskList)
++ void deleteNode(Node)
++ JSONArray getTaskLists()
++ JSONArray getTaskList(String)
++ Account getSyncAccount()
++ void resetUpdateArray()
+}
+class net.micode.notes.ui.NoteItemData {
+~ {static} String[] PROJECTION
+- {static} int ID_COLUMN
+- {static} int ALERTED_DATE_COLUMN
+- {static} int BG_COLOR_ID_COLUMN
+- {static} int CREATED_DATE_COLUMN
+- {static} int HAS_ATTACHMENT_COLUMN
+- {static} int MODIFIED_DATE_COLUMN
+- {static} int NOTES_COUNT_COLUMN
+- {static} int PARENT_ID_COLUMN
+- {static} int SNIPPET_COLUMN
+- {static} int TYPE_COLUMN
+- {static} int WIDGET_ID_COLUMN
+- {static} int WIDGET_TYPE_COLUMN
+- long mId
+- long mAlertDate
+- int mBgColorId
+- long mCreatedDate
+- boolean mHasAttachment
+- long mModifiedDate
+- int mNotesCount
+- long mParentId
+- String mSnippet
+- int mType
+- int mWidgetId
+- int mWidgetType
+- String mName
+- String mPhoneNumber
+- boolean mIsLastItem
+- boolean mIsFirstItem
+- boolean mIsOnlyOneItem
+- boolean mIsOneNoteFollowingFolder
+- boolean mIsMultiNotesFollowingFolder
+- void checkPostion(Cursor)
++ boolean isOneFollowingFolder()
++ boolean isMultiFollowingFolder()
++ boolean isLast()
++ String getCallName()
++ boolean isFirst()
++ boolean isSingle()
++ long getId()
++ long getAlertDate()
++ long getCreatedDate()
++ boolean hasAttachment()
++ long getModifiedDate()
++ int getBgColorId()
++ long getParentId()
++ int getNotesCount()
++ long getFolderId()
++ int getType()
++ int getWidgetType()
++ int getWidgetId()
++ String getSnippet()
++ boolean hasAlert()
++ boolean isCallRecord()
++ {static} int getNoteType(Cursor)
+}
+class net.micode.notes.ui.DateTimePicker {
+- {static} boolean DEFAULT_ENABLE_STATE
+- {static} int HOURS_IN_HALF_DAY
+- {static} int HOURS_IN_ALL_DAY
+- {static} int DAYS_IN_ALL_WEEK
+- {static} int DATE_SPINNER_MIN_VAL
+- {static} int DATE_SPINNER_MAX_VAL
+- {static} int HOUR_SPINNER_MIN_VAL_24_HOUR_VIEW
+- {static} int HOUR_SPINNER_MAX_VAL_24_HOUR_VIEW
+- {static} int HOUR_SPINNER_MIN_VAL_12_HOUR_VIEW
+- {static} int HOUR_SPINNER_MAX_VAL_12_HOUR_VIEW
+- {static} int MINUT_SPINNER_MIN_VAL
+- {static} int MINUT_SPINNER_MAX_VAL
+- {static} int AMPM_SPINNER_MIN_VAL
+- {static} int AMPM_SPINNER_MAX_VAL
+- NumberPicker mDateSpinner
+- NumberPicker mHourSpinner
+- NumberPicker mMinuteSpinner
+- NumberPicker mAmPmSpinner
+- Calendar mDate
+- String[] mDateDisplayValues
+- boolean mIsAm
+- boolean mIs24HourView
+- boolean mIsEnabled
+- boolean mInitialising
+- OnDateTimeChangedListener mOnDateTimeChangedListener
+- NumberPicker.OnValueChangeListener mOnDateChangedListener
+- NumberPicker.OnValueChangeListener mOnHourChangedListener
+- NumberPicker.OnValueChangeListener mOnMinuteChangedListener
+- NumberPicker.OnValueChangeListener mOnAmPmChangedListener
++ void setEnabled(boolean)
++ boolean isEnabled()
++ long getCurrentDateInTimeMillis()
++ void setCurrentDate(long)
++ void setCurrentDate(int,int,int,int,int)
++ int getCurrentYear()
++ void setCurrentYear(int)
++ int getCurrentMonth()
++ void setCurrentMonth(int)
++ int getCurrentDay()
++ void setCurrentDay(int)
++ int getCurrentHourOfDay()
+- int getCurrentHour()
++ void setCurrentHour(int)
++ int getCurrentMinute()
++ void setCurrentMinute(int)
++ boolean is24HourView()
++ void set24HourView(boolean)
+- void updateDateControl()
+- void updateAmPmControl()
+- void updateHourControl()
++ void setOnDateTimeChangedListener(OnDateTimeChangedListener)
+- void onDateTimeChanged()
+}
+interface net.micode.notes.ui.DateTimePicker.OnDateTimeChangedListener {
+~ void onDateTimeChanged(DateTimePicker,int,int,int,int,int)
+}
+class net.micode.notes.ui.NotesPreferenceActivity {
++ {static} String PREFERENCE_NAME
++ {static} String PREFERENCE_SYNC_ACCOUNT_NAME
++ {static} String PREFERENCE_LAST_SYNC_TIME
++ {static} String PREFERENCE_SET_BG_COLOR_KEY
+- {static} String PREFERENCE_SYNC_ACCOUNT_KEY
+- {static} String AUTHORITIES_FILTER_KEY
+- PreferenceCategory mAccountCategory
+- GTaskReceiver mReceiver
+- Account[] mOriAccounts
+- boolean mHasAddedAccount
+# void onCreate(Bundle)
+# void onResume()
+# void onDestroy()
+- void loadAccountPreference()
+- void loadSyncButton()
+- void refreshUI()
+- void showSelectAccountAlertDialog()
+- void showChangeAccountConfirmAlertDialog()
+- Account[] getGoogleAccounts()
+- void setSyncAccount(String)
+- void removeSyncAccount()
++ {static} String getSyncAccountName(Context)
++ {static} void setLastSyncTime(Context,long)
++ {static} long getLastSyncTime(Context)
++ boolean onOptionsItemSelected(MenuItem)
+}
+class net.micode.notes.ui.NotesPreferenceActivity.GTaskReceiver {
++ void onReceive(Context,Intent)
+}
+class net.micode.notes.ui.AlarmInitReceiver {
+- {static} String[] PROJECTION
+- {static} int COLUMN_ID
+- {static} int COLUMN_ALERTED_DATE
++ void onReceive(Context,Intent)
+}
+class net.micode.notes.gtask.data.SqlData {
+- {static} String TAG
+- {static} int INVALID_ID
++ {static} String[] PROJECTION_DATA
++ {static} int DATA_ID_COLUMN
++ {static} int DATA_MIME_TYPE_COLUMN
++ {static} int DATA_CONTENT_COLUMN
++ {static} int DATA_CONTENT_DATA_1_COLUMN
++ {static} int DATA_CONTENT_DATA_3_COLUMN
+- ContentResolver mContentResolver
+- boolean mIsCreate
+- long mDataId
+- String mDataMimeType
+- String mDataContent
+- long mDataContentData1
+- String mDataContentData3
+- ContentValues mDiffDataValues
+- void loadFromCursor(Cursor)
++ void setContent(JSONObject)
++ JSONObject getContent()
++ void commit(long,boolean,long)
++ long getId()
+}
+class net.micode.notes.gtask.data.MetaData {
+- {static} String TAG
+- String mRelatedGid
++ void setMeta(String,JSONObject)
++ String getRelatedGid()
++ boolean isWorthSaving()
++ void setContentByRemoteJSON(JSONObject)
++ void setContentByLocalJSON(JSONObject)
++ JSONObject getLocalJSONFromContent()
++ int getSyncAction(Cursor)
+}
+class net.micode.notes.ui.AlarmReceiver {
++ void onReceive(Context,Intent)
+}
+class net.micode.notes.data.Notes {
++ {static} String AUTHORITY
++ {static} String TAG
++ {static} int TYPE_NOTE
++ {static} int TYPE_FOLDER
++ {static} int TYPE_SYSTEM
++ {static} int ID_ROOT_FOLDER
++ {static} int ID_TEMPARAY_FOLDER
++ {static} int ID_CALL_RECORD_FOLDER
++ {static} int ID_TRASH_FOLER
++ {static} String INTENT_EXTRA_ALERT_DATE
++ {static} String INTENT_EXTRA_BACKGROUND_ID
++ {static} String INTENT_EXTRA_WIDGET_ID
++ {static} String INTENT_EXTRA_WIDGET_TYPE
++ {static} String INTENT_EXTRA_FOLDER_ID
++ {static} String INTENT_EXTRA_CALL_DATE
++ {static} int TYPE_WIDGET_INVALIDE
++ {static} int TYPE_WIDGET_2X
++ {static} int TYPE_WIDGET_4X
++ {static} Uri CONTENT_NOTE_URI
++ {static} Uri CONTENT_DATA_URI
+}
+class net.micode.notes.data.Notes.DataConstants {
++ {static} String NOTE
++ {static} String CALL_NOTE
+}
+interface net.micode.notes.data.Notes.NoteColumns {
++ {static} String ID
++ {static} String PARENT_ID
++ {static} String CREATED_DATE
++ {static} String MODIFIED_DATE
++ {static} String ALERTED_DATE
++ {static} String SNIPPET
++ {static} String WIDGET_ID
++ {static} String WIDGET_TYPE
++ {static} String BG_COLOR_ID
++ {static} String HAS_ATTACHMENT
++ {static} String NOTES_COUNT
++ {static} String TYPE
++ {static} String SYNC_ID
++ {static} String LOCAL_MODIFIED
++ {static} String ORIGIN_PARENT_ID
++ {static} String GTASK_ID
++ {static} String VERSION
+}
+interface net.micode.notes.data.Notes.DataColumns {
++ {static} String ID
++ {static} String MIME_TYPE
++ {static} String NOTE_ID
++ {static} String CREATED_DATE
++ {static} String MODIFIED_DATE
++ {static} String CONTENT
++ {static} String DATA1
++ {static} String DATA2
++ {static} String DATA3
++ {static} String DATA4
++ {static} String DATA5
+}
+class net.micode.notes.data.Notes.TextNote {
++ {static} String MODE
++ {static} int MODE_CHECK_LIST
++ {static} String CONTENT_TYPE
++ {static} String CONTENT_ITEM_TYPE
++ {static} Uri CONTENT_URI
+}
+class net.micode.notes.data.Notes.CallNote {
++ {static} String CALL_DATE
++ {static} String PHONE_NUMBER
++ {static} String CONTENT_TYPE
++ {static} String CONTENT_ITEM_TYPE
++ {static} Uri CONTENT_URI
+}
+class net.micode.notes.gtask.data.SqlNote {
+- {static} String TAG
+- {static} int INVALID_ID
++ {static} String[] PROJECTION_NOTE
++ {static} int ID_COLUMN
++ {static} int ALERTED_DATE_COLUMN
++ {static} int BG_COLOR_ID_COLUMN
++ {static} int CREATED_DATE_COLUMN
++ {static} int HAS_ATTACHMENT_COLUMN
++ {static} int MODIFIED_DATE_COLUMN
++ {static} int NOTES_COUNT_COLUMN
++ {static} int PARENT_ID_COLUMN
++ {static} int SNIPPET_COLUMN
++ {static} int TYPE_COLUMN
++ {static} int WIDGET_ID_COLUMN
++ {static} int WIDGET_TYPE_COLUMN
++ {static} int SYNC_ID_COLUMN
++ {static} int LOCAL_MODIFIED_COLUMN
++ {static} int ORIGIN_PARENT_ID_COLUMN
++ {static} int GTASK_ID_COLUMN
++ {static} int VERSION_COLUMN
+- Context mContext
+- ContentResolver mContentResolver
+- boolean mIsCreate
+- long mId
+- long mAlertDate
+- int mBgColorId
+- long mCreatedDate
+- int mHasAttachment
+- long mModifiedDate
+- long mParentId
+- String mSnippet
+- int mType
+- int mWidgetId
+- int mWidgetType
+- long mOriginParent
+- long mVersion
+- ContentValues mDiffNoteValues
+- ArrayList<SqlData> mDataList
+- void loadFromCursor(long)
+- void loadFromCursor(Cursor)
+- void loadDataContent()
++ boolean setContent(JSONObject)
++ JSONObject getContent()
++ void setParentId(long)
++ void setGtaskId(String)
++ void setSyncId(long)
++ void resetLocalModified()
++ long getId()
++ long getParentId()
++ String getSnippet()
++ boolean isNoteType()
++ void commit(boolean)
+}
+class net.micode.notes.ui.NotesListActivity {
+- {static} int FOLDER_NOTE_LIST_QUERY_TOKEN
+- {static} int FOLDER_LIST_QUERY_TOKEN
+- {static} int MENU_FOLDER_DELETE
+- {static} int MENU_FOLDER_VIEW
+- {static} int MENU_FOLDER_CHANGE_NAME
+- {static} String PREFERENCE_ADD_INTRODUCTION
+- ListEditState mState
+- BackgroundQueryHandler mBackgroundQueryHandler
+- NotesListAdapter mNotesListAdapter
+- ListView mNotesListView
+- Button mAddNewNote
+- boolean mDispatch
+- int mOriginY
+- int mDispatchY
+- TextView mTitleBar
+- long mCurrentFolderId
+- ContentResolver mContentResolver
+- ModeCallback mModeCallBack
+- {static} String TAG
++ {static} int NOTES_LISTVIEW_SCROLL_RATE
+- NoteItemData mFocusNoteDataItem
+- {static} String NORMAL_SELECTION
+- {static} String ROOT_FOLDER_SELECTION
+- {static} int REQUEST_CODE_OPEN_NODE
+- {static} int REQUEST_CODE_NEW_NODE
+- OnCreateContextMenuListener mFolderOnCreateContextMenuListener
+# void onCreate(Bundle)
+# void onActivityResult(int,int,Intent)
+- void setAppInfoFromRawRes()
+# void onStart()
+- void initResources()
+- void startAsyncNotesListQuery()
+- void showFolderListMenu(Cursor)
+- void createNewNote()
+- void batchDelete()
+- void deleteFolder(long)
+- void openNode(NoteItemData)
+- void openFolder(NoteItemData)
++ void onClick(View)
+- void showSoftInput()
+- void hideSoftInput(View)
+- void showCreateOrModifyFolderDialog(boolean)
++ void onBackPressed()
+- void updateWidget(int,int)
++ void onContextMenuClosed(Menu)
++ boolean onContextItemSelected(MenuItem)
++ boolean onPrepareOptionsMenu(Menu)
++ boolean onOptionsItemSelected(MenuItem)
++ boolean onSearchRequested()
+- void exportNoteToText()
+- boolean isSyncMode()
+- void startPreferenceActivity()
+- void startQueryDestinationFolders()
++ boolean onItemLongClick(AdapterView<?>,View,int,long)
+}
+enum net.micode.notes.ui.ListEditState {
++  NOTE_LIST
++  SUB_FOLDER
++  CALL_RECORD_FOLDER
+}
+class net.micode.notes.ui.NotesListActivity.ModeCallback {
+- DropdownMenu mDropDownMenu
+- ActionMode mActionMode
+- MenuItem mMoveMenu
++ boolean onCreateActionMode(ActionMode,Menu)
+- void updateMenu()
++ boolean onPrepareActionMode(ActionMode,Menu)
++ boolean onActionItemClicked(ActionMode,MenuItem)
++ void onDestroyActionMode(ActionMode)
++ void finishActionMode()
++ void onItemCheckedStateChanged(ActionMode,int,long,boolean)
++ boolean onMenuItemClick(MenuItem)
+}
+class net.micode.notes.ui.NotesListActivity.NewNoteOnTouchListener {
++ boolean onTouch(View,MotionEvent)
+}
+class net.micode.notes.ui.NotesListActivity.BackgroundQueryHandler {
+# void onQueryComplete(int,Object,Cursor)
+}
+class net.micode.notes.ui.NotesListActivity.OnListItemClickListener {
++ void onItemClick(AdapterView<?>,View,int,long)
+}
+class net.micode.notes.tool.BackupUtils {
+- {static} String TAG
+- {static} BackupUtils sInstance
++ {static} int STATE_SD_CARD_UNMOUONTED
++ {static} int STATE_BACKUP_FILE_NOT_EXIST
++ {static} int STATE_DATA_DESTROIED
++ {static} int STATE_SYSTEM_ERROR
++ {static} int STATE_SUCCESS
+- TextExport mTextExport
++ {static} BackupUtils getInstance(Context)
+- {static} boolean externalStorageAvailable()
++ int exportToText()
++ String getExportedTextFileName()
++ String getExportedTextFileDir()
+- {static} File generateFileMountedOnSDcard(Context,int,int)
+}
+class net.micode.notes.tool.BackupUtils.TextExport {
+- {static} String[] NOTE_PROJECTION
+- {static} int NOTE_COLUMN_ID
+- {static} int NOTE_COLUMN_MODIFIED_DATE
+- {static} int NOTE_COLUMN_SNIPPET
+- {static} String[] DATA_PROJECTION
+- {static} int DATA_COLUMN_CONTENT
+- {static} int DATA_COLUMN_MIME_TYPE
+- {static} int DATA_COLUMN_CALL_DATE
+- {static} int DATA_COLUMN_PHONE_NUMBER
+- String[] TEXT_FORMAT
+- {static} int FORMAT_FOLDER_NAME
+- {static} int FORMAT_NOTE_DATE
+- {static} int FORMAT_NOTE_CONTENT
+- Context mContext
+- String mFileName
+- String mFileDirectory
+- String getFormat(int)
+- void exportFolderToText(String,PrintStream)
+- void exportNoteToText(String,PrintStream)
++ int exportToText()
+- PrintStream getExportToTextPrintStream()
+}
+class net.micode.notes.widget.NoteWidgetProvider_2x {
++ void onUpdate(Context,AppWidgetManager,int[])
+# int getLayoutId()
+# int getBgResourceId(int)
+# int getWidgetType()
+}
+class net.micode.notes.ui.DropdownMenu {
+- Button mButton
+- PopupMenu mPopupMenu
+- Menu mMenu
++ void setOnDropdownMenuItemClickListener(OnMenuItemClickListener)
++ MenuItem findItem(int)
++ void setTitle(CharSequence)
+}
+
+
+net.micode.notes.gtask.exception.RuntimeException <|-- net.micode.notes.gtask.exception.ActionFailureException
+android.widget.LinearLayout <|-- net.micode.notes.ui.NotesListItem
+net.micode.notes.model.WorkingNote +.. net.micode.notes.model.WorkingNote.NoteSettingChangedListener
+net.micode.notes.tool.ResourceParser +.. net.micode.notes.tool.ResourceParser.NoteBgResources
+net.micode.notes.tool.ResourceParser +.. net.micode.notes.tool.ResourceParser.NoteItemBgResources
+net.micode.notes.tool.ResourceParser +.. net.micode.notes.tool.ResourceParser.WidgetBgResources
+net.micode.notes.tool.ResourceParser +.. net.micode.notes.tool.ResourceParser.TextAppearanceResources
+android.os.AsyncTask <|-- net.micode.notes.gtask.remote.GTaskASyncTask
+net.micode.notes.gtask.remote.GTaskASyncTask +.. net.micode.notes.gtask.remote.GTaskASyncTask.OnCompleteListener
+net.micode.notes.gtask.exception.Exception <|-- net.micode.notes.gtask.exception.NetworkFailureException
+android.content.DialogInterface.OnClickListener <|.. net.micode.notes.ui.AlarmAlertActivity
+android.content.DialogInterface.OnDismissListener <|.. net.micode.notes.ui.AlarmAlertActivity
+android.app.Activity <|-- net.micode.notes.ui.AlarmAlertActivity
+android.content.DialogInterface.OnClickListener <|.. net.micode.notes.ui.DateTimePickerDialog
+android.app.AlertDialog <|-- net.micode.notes.ui.DateTimePickerDialog
+net.micode.notes.ui.DateTimePickerDialog +.. net.micode.notes.ui.DateTimePickerDialog.OnDateTimeSetListener
+net.micode.notes.gtask.data.Node <|-- net.micode.notes.gtask.data.TaskList
+net.micode.notes.gtask.data.Node <|-- net.micode.notes.gtask.data.Task
+android.app.Service <|-- net.micode.notes.gtask.remote.GTaskSyncService
+android.content.ContentProvider <|-- net.micode.notes.data.NotesProvider
+android.database.sqlite.SQLiteOpenHelper <|-- net.micode.notes.data.NotesDatabaseHelper
+net.micode.notes.data.NotesDatabaseHelper +.. net.micode.notes.data.NotesDatabaseHelper.TABLE
+net.micode.notes.model.Note +.. net.micode.notes.model.Note.NoteData
+android.appwidget.AppWidgetProvider <|-- net.micode.notes.widget.NoteWidgetProvider
+android.widget.EditText <|-- net.micode.notes.ui.NoteEditText
+net.micode.notes.ui.NoteEditText +.. net.micode.notes.ui.NoteEditText.OnTextViewChangeListener
+android.widget.CursorAdapter <|-- net.micode.notes.ui.FoldersListAdapter
+net.micode.notes.ui.FoldersListAdapter +.. net.micode.notes.ui.FoldersListAdapter.FolderListItem
+net.micode.notes.ui.LinearLayout <|-- net.micode.notes.ui.FoldersListAdapter.FolderListItem
+android.view.View.OnClickListener <|.. net.micode.notes.ui.NoteEditActivity
+net.micode.notes.model.WorkingNote.NoteSettingChangedListener <|.. net.micode.notes.ui.NoteEditActivity
+net.micode.notes.ui.NoteEditText.OnTextViewChangeListener <|.. net.micode.notes.ui.NoteEditActivity
+android.app.Activity <|-- net.micode.notes.ui.NoteEditActivity
+net.micode.notes.ui.NoteEditActivity +.. net.micode.notes.ui.NoteEditActivity.HeadViewHolder
+android.widget.CursorAdapter <|-- net.micode.notes.ui.NotesListAdapter
+net.micode.notes.ui.NotesListAdapter +.. net.micode.notes.ui.NotesListAdapter.AppWidgetAttribute
+net.micode.notes.widget.NoteWidgetProvider <|-- net.micode.notes.widget.NoteWidgetProvider_4x
+android.widget.FrameLayout <|-- net.micode.notes.ui.DateTimePicker
+net.micode.notes.ui.DateTimePicker +.. net.micode.notes.ui.DateTimePicker.OnDateTimeChangedListener
+android.preference.PreferenceActivity <|-- net.micode.notes.ui.NotesPreferenceActivity
+net.micode.notes.ui.NotesPreferenceActivity +.. net.micode.notes.ui.NotesPreferenceActivity.GTaskReceiver
+net.micode.notes.ui.BroadcastReceiver <|-- net.micode.notes.ui.NotesPreferenceActivity.GTaskReceiver
+android.content.BroadcastReceiver <|-- net.micode.notes.ui.AlarmInitReceiver
+net.micode.notes.gtask.data.Task <|-- net.micode.notes.gtask.data.MetaData
+android.content.BroadcastReceiver <|-- net.micode.notes.ui.AlarmReceiver
+net.micode.notes.data.Notes +.. net.micode.notes.data.Notes.DataConstants
+net.micode.notes.data.Notes +.. net.micode.notes.data.Notes.NoteColumns
+net.micode.notes.data.Notes +.. net.micode.notes.data.Notes.DataColumns
+net.micode.notes.data.Notes +.. net.micode.notes.data.Notes.TextNote
+net.micode.notes.data.DataColumns <|.. net.micode.notes.data.Notes.TextNote
+net.micode.notes.data.Notes +.. net.micode.notes.data.Notes.CallNote
+net.micode.notes.data.DataColumns <|.. net.micode.notes.data.Notes.CallNote
+android.view.View.OnClickListener <|.. net.micode.notes.ui.NotesListActivity
+android.widget.AdapterView.OnItemLongClickListener <|.. net.micode.notes.ui.NotesListActivity
+android.app.Activity <|-- net.micode.notes.ui.NotesListActivity
+net.micode.notes.ui.NotesListActivity +.. net.micode.notes.ui.NotesListActivity.ModeCallback
+net.micode.notes.ui.MultiChoiceModeListener <|.. net.micode.notes.ui.NotesListActivity.ModeCallback
+net.micode.notes.ui.OnMenuItemClickListener <|.. net.micode.notes.ui.NotesListActivity.ModeCallback
+net.micode.notes.ui.NotesListActivity +.. net.micode.notes.ui.NotesListActivity.NewNoteOnTouchListener
+net.micode.notes.ui.OnTouchListener <|.. net.micode.notes.ui.NotesListActivity.NewNoteOnTouchListener
+net.micode.notes.ui.NotesListActivity +.. net.micode.notes.ui.NotesListActivity.BackgroundQueryHandler
+net.micode.notes.ui.AsyncQueryHandler <|-- net.micode.notes.ui.NotesListActivity.BackgroundQueryHandler
+net.micode.notes.ui.NotesListActivity +.. net.micode.notes.ui.NotesListActivity.OnListItemClickListener
+net.micode.notes.ui.OnItemClickListener <|.. net.micode.notes.ui.NotesListActivity.OnListItemClickListener
+net.micode.notes.tool.BackupUtils +.. net.micode.notes.tool.BackupUtils.TextExport
+net.micode.notes.widget.NoteWidgetProvider <|-- net.micode.notes.widget.NoteWidgetProvider_2x
+@enduml
