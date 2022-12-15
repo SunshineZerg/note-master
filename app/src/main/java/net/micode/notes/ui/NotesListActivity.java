@@ -16,21 +16,35 @@
 
 package net.micode.notes.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.appwidget.AppWidgetManager;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -55,10 +69,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import net.micode.notes.R;
 import net.micode.notes.data.Notes;
@@ -72,7 +94,12 @@ import net.micode.notes.ui.NotesListAdapter.AppWidgetAttribute;
 import net.micode.notes.widget.NoteWidgetProvider_2x;
 import net.micode.notes.widget.NoteWidgetProvider_4x;
 
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -90,7 +117,8 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
     private static final int MENU_FOLDER_CHANGE_NAME = 2;
 
     private static final String PREFERENCE_ADD_INTRODUCTION = "net.micode.notes.introduction";
-
+    private static final int TAKE_PHOTO = 201;
+    private static final int CHOSE_PHOTO = 202;
     private enum ListEditState {
         NOTE_LIST, SUB_FOLDER, CALL_RECORD_FOLDER
     };
@@ -111,7 +139,11 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
 
     private int mDispatchY;
 
+    private Uri imgUri;
+
     private TextView mTitleBar;
+
+    private FrameLayout mFrameLayout;
 
     private long mCurrentFolderId;
 
@@ -139,6 +171,17 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_list);
+        mFrameLayout = findViewById(R.id.note_list_framelayout);
+        try {
+            File savefile = new File(getFilesDir(), "image.jpg");
+            FileInputStream fs = new FileInputStream(savefile);
+            Bitmap bitmap = BitmapFactory.decodeStream(fs);
+            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+            mFrameLayout.setBackgroundDrawable(drawable);
+            mFrameLayout.getBackground().setAlpha(180);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         initResources();
 
         /**
@@ -147,15 +190,56 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         setAppInfoFromRawRes();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK
                 && (requestCode == REQUEST_CODE_OPEN_NODE || requestCode == REQUEST_CODE_NEW_NODE)) {
             mNotesListAdapter.changeCursor(null);
-        } else {
+        }else if(requestCode==TAKE_PHOTO){
+            if (resultCode == RESULT_OK) {
+                try {
+                    File savefile = new File(getFilesDir(), "image.jpg");
+                    FileInputStream fs = new FileInputStream(savefile);
+                    Bitmap bitmap = BitmapFactory.decodeStream(fs);
+                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                    mFrameLayout.setBackgroundDrawable(drawable);
+                    mFrameLayout.getBackground().setAlpha(180);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }else if(requestCode==CHOSE_PHOTO){
+            if (resultCode == Activity.RESULT_OK){
+                try {
+                    Bitmap bitmap = getBitmapFromUri(data.getData());
+                    File outputImg = new File(getFilesDir(),"image.jpg");
+                    if (outputImg.exists()) {
+                        outputImg.delete();
+                    }
+                    outputImg.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(outputImg);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                    mFrameLayout.setBackgroundDrawable(drawable);
+                    mFrameLayout.getBackground().setAlpha(180);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws FileNotFoundException {
+        ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(uri, "r");
+        return BitmapFactory.decodeFileDescriptor(parcelFileDescriptor.getFileDescriptor());
+    }
+
 
     private void setAppInfoFromRawRes() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -812,10 +896,66 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
             case R.id.menu_search:
                 onSearchRequested();
                 break;
+            case R.id.mene_camera:
+                openCamera();
+                break;
+            case R.id.menu_album:
+                choosePhoto();
+                break;
             default:
                 break;
         }
         return true;
+    }
+
+    private void choosePhoto() {
+        if (ContextCompat.checkSelfPermission(NotesListActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(NotesListActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+        }else {
+            openAlbum();
+        }
+    }
+
+    private void openAlbum() {
+        Intent intent=new Intent("android.intent.action.GET_CONTENT");
+        //选择相册 intent.setType(“audio/*”); //选择音频 intent.setType(“video/*”); //选择视频
+        //这是正常的访问系统自带的文件管理器。但是setType只支持单个setType一般是以下这种(以只查看图片文件为例):
+        intent.setType("image/*");
+        startActivityForResult(intent,CHOSE_PHOTO);
+    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 1:
+                if (grantResults.length>0 &&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    openAlbum();
+                }else {
+                    Toast.makeText(this,"你还没有统一访问相册的权限",Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
+    private void openCamera() {
+        //创建file对象储存拍摄到的照片,将图片命名为output_image.jpg，将他存储在sd卡的关联目录下，调用getExternalCacheDir()
+        //方法可以获得这个目录
+        File outputImg = new File(getFilesDir(),"image.jpg");
+        try {
+            if (outputImg.exists()){
+                outputImg.delete();
+            }
+            outputImg.createNewFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT>=24){
+            imgUri= FileProvider.getUriForFile(NotesListActivity.this,"net.micode.notes.FileProvider",outputImg);
+
+        }else {
+            imgUri=Uri.fromFile(outputImg);
+        }
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imgUri);
+        startActivityForResult(intent,TAKE_PHOTO);
     }
 
     @Override
