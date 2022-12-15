@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -49,7 +50,13 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
     private static final int SNIPPET_PREW_MAX_LEN = 60;
     MediaPlayer mPlayer;
     NotificationManager manager;
-
+    private Notification notification;
+    public void sendNotification(View view){
+        manager.notify(1,notification);
+    }
+    public void cancelNotification(View view){
+        manager.cancel(1);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -81,11 +88,12 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
             return;
         }
 
+
         mPlayer = new MediaPlayer();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("leo", "测试通知", NotificationManager.IMPORTANCE_HIGH);//创建通知渠道，设置渠道id，通知名称,通知重要性
+            NotificationChannel channel = new NotificationChannel("wyk", "测试通知", NotificationManager.IMPORTANCE_HIGH);//创建通知渠道，设置渠道id，通知名称,通知重要性
             manager.createNotificationChannel(channel);
-            Notification.Builder builder = new Notification.Builder(this,"leo");
+            Notification.Builder builder = new Notification.Builder(this,"wyk");
             builder.setTicker("hello");
             builder.setSmallIcon(R.drawable.icon_app);
             builder.setContentTitle("小米便签通知");
@@ -159,6 +167,7 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
                 break;
         }
     }
+
 
     public void onDismiss(DialogInterface dialog) {
         stopAlarmSound();
