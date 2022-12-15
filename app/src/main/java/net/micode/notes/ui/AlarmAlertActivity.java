@@ -18,6 +18,9 @@ package net.micode.notes.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -45,11 +48,15 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
     private String mSnippet;
     private static final int SNIPPET_PREW_MAX_LEN = 60;
     MediaPlayer mPlayer;
+    NotificationManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         final Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
@@ -75,6 +82,16 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         }
 
         mPlayer = new MediaPlayer();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("leo", "测试通知", NotificationManager.IMPORTANCE_HIGH);//创建通知渠道，设置渠道id，通知名称,通知重要性
+            manager.createNotificationChannel(channel);
+            Notification.Builder builder = new Notification.Builder(this,"leo");
+            builder.setTicker("hello");
+            builder.setSmallIcon(R.drawable.icon_app);
+            builder.setContentTitle("小米便签通知");
+            builder.setContentText("有到期的便签提示");
+            manager.notify(1,builder.build());
+        }
         if (DataUtils.visibleInNoteDatabase(getContentResolver(), mNoteId, Notes.TYPE_NOTE)) {
             showActionDialog();
             playAlarmSound();
